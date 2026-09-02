@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemap URL will be added after the final public website URL is confirmed.
+Sitemap: https://abdurrazzak123.github.io/banglanews.2026/sitemap.xml
