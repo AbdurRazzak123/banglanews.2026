@@ -1,0 +1,66 @@
+বাংলা সংবাদ — Final Google Sheet Setup
+
+A ID
+B Category
+C Headline
+D Details (পুরো খবর)
+E Image1 (ঐচ্ছিক — চাইলে ছবি দিন, না চাইলে ফাঁকা রাখুন)
+F Date
+G Image2 (Optional)
+H Image3 (Optional)
+I Video (Optional)
+
+Homepage/category pages: Details-এর প্রথম ১০টি ভিজ্যুয়াল লাইন পর্যন্ত summary দেখাবে, তারপর “আরও পড়ুন”। Image1, Image2, Image3 — তিনটিই ঐচ্ছিক; কোনো ছবি না দিলেও শুধু খবর প্রকাশ হবে।
+Details page: আগের নিয়ম অনুযায়ী প্রথম ৩০টি Unicode character বাদ দিয়ে বাকি লেখা দেখাবে। Image2 প্রায় ৩০–৪০ লাইন (টার্গেট ৩৫ লাইন) পরে; Image3 ও Video শেষে/পরবর্তী অংশে।
+Category label মোবাইলে ছবির ওপর আর বসবে না; ছবির নিচে সাদা অংশে থাকবে।
+
+
+================ AD SYSTEM (নতুন) ================
+
+একই Google Spreadsheet-এ নতুন একটি tab/Sheet তৈরি করো: Ads
+
+Ads tab-এর ১ম সারি:
+A1 = Position
+B1 = Active
+C1 = Image URL
+D1 = Click URL
+E1 = Title
+F1 = Ad Code
+
+এর নিচে:
+A2 = TOP
+B2 = Yes/No
+C2 = (ঐচ্ছিক Image URL)
+D2 = (ঐচ্ছিক Click URL)
+E2 = (ঐচ্ছিক Title)
+F2 = (Ad network থেকে পাওয়া TOP ad code)
+
+A3 = MIDDLE
+B3 = Yes/No
+C3 = (ঐচ্ছিক Image URL)
+D3 = (ঐচ্ছিক Click URL)
+E3 = (ঐচ্ছিক Title)
+F3 = (Ad network থেকে পাওয়া MIDDLE ad code)
+
+A4 = BOTTOM
+B4 = Yes/No
+C4 = (ঐচ্ছিক Image URL)
+D4 = (ঐচ্ছিক Click URL)
+E4 = (ঐচ্ছিক Title)
+F4 = (Ad network থেকে পাওয়া BOTTOM ad code)
+
+শুধু এই Ads tab-এ code পরিবর্তন করলেই হবে। বিজ্ঞাপনের জন্য HTML ফাইল বারবার GitHub-এ আপডেট করতে হবে না। TOP, MIDDLE এবং BOTTOM slot একই প্রস্থ/উচ্চতার responsive container ব্যবহার করবে।
+
+গুরুত্বপূর্ণ:
+- Google Spreadsheet-টি অবশ্যই এমনভাবে Share/Publish করতে হবে যাতে ওয়েবসাইট সেটি পড়তে পারে।
+- Ad network-এর code তাদের Terms/Policy অনুযায়ী ব্যবহার করতে হবে।
+- যদি কোনো network dynamicভাবে injected code অনুমোদন না করে, তাদের নির্দেশনা অনুযায়ী static placement প্রয়োজন হতে পারে।
+===================================================
+
+================ এই ZIP-এর সর্বশেষ আপডেট ================
+১) index.html-এর “সর্বশেষ সংবাদ” এখন Google Sheet-এর সর্বশেষ ১০টি শিরোনামই ধারাবাহিকভাবে দেখাবে (নতুনটি আগে)।
+২) প্রতিটি শিরোনামে ক্লিক করলে home.html-এ সেই ID-র সংবাদ খুলে/ফোকাস হয়ে সরাসরি সেই সংবাদে স্ক্রল করবে।
+৩) Ads loader এখন shared ads-loader.js; তাই একই Ads tab থেকে TOP/MIDDLE/BOTTOM বিজ্ঞাপন সব পেজে পড়বে।
+৪) TOP, MIDDLE এবং BOTTOM ad slot-এর container একই responsive প্রস্থ/উচ্চতার নিয়মে সেট করা হয়েছে।
+৫) HTML ফাইল বারবার ad code দিয়ে সম্পাদনা করার দরকার নেই; Ads tab-এর B কলামে code বদলালেই পরের page load-এ নতুন code নেওয়া হবে।
+==========================================================
