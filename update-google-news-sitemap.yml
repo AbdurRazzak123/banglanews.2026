@@ -1,4 +1,4 @@
-name: Update Google News Sitemap
+name:Update Google News Sitemap
 
 on:
   schedule:
