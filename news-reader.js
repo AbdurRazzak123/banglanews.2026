@@ -67,7 +67,7 @@
       .same-page-detail{margin-top:18px;padding-top:18px;border-top:2px solid #eee;color:#333;font-size:16px;line-height:1.85}
       .same-page-detail p{margin:0 0 16px}
       .reader-inline-media{margin:28px 0;text-align:center;background:#fff}
-      .reader-inline-media img{display:block;width:100%;height:auto;max-height:620px;object-fit:cover;border-radius:8px}
+      .reader-inline-media img{display:block;width:100%;height:auto;max-height:620px;object-fit:contain;border-radius:8px}
       .reader-inline-media figcaption{font-size:12px;color:#777;margin-top:6px}
       .reader-detail-loading{padding:15px 0;color:#777;text-align:center}
       .news-card .news-image img,.news-image-top img{background:#f1f1f1}
@@ -78,7 +78,7 @@
     if(!n.image || card.querySelector('.news-image img,.news-image-top img,.news-primary-image')) return;
     const title=card.querySelector('h2,h3');
     const wrap=document.createElement('div'); wrap.className='news-primary-image';
-    wrap.innerHTML=`<img loading="lazy" src="${esc(imageUrl(n.image))}" alt="${esc(n.title)}" style="width:100%;height:auto;max-height:520px;object-fit:cover;border-radius:8px" onerror="this.closest('.news-primary-image').remove()">`;
+    wrap.innerHTML=`<img loading="lazy" src="${esc(imageUrl(n.image))}" alt="${esc(n.title)}" style="width:100%;height:auto;max-height:520px;object-fit:contain;border-radius:8px" onerror="this.closest('.news-primary-image').remove()">`;
     if(title) title.parentNode.insertBefore(wrap,title); else card.insertBefore(wrap,card.firstChild);
   }
   async function openDetail(link){

@@ -265,6 +265,354 @@
 @media(max-width:768px){.ad-slot[data-ad-slot="top"],.ad-slot[data-ad-slot="middle"],.ad-slot[data-ad-slot="bottom"]{min-height:80px!important}}
 </style>
 <script type="application/ld+json" id="site-seo-schema">{"@context":"https://schema.org","@type":"WebPage","name":"বিনোদন সংবাদ | বাংলা সংবাদ","description":"বাংলাদেশ ও বিশ্বের বিনোদন জগতের সর্বশেষ খবর, তারকা ও বিনোদন আপডেট।","inLanguage":"bn","url":"https://abdurrazzak123.github.io/banglanews.2026/entertainment.html"}</script>
+
+<style id="premium-news-theme-v2">
+/* ===== বাংলা সংবাদ — Premium Theme + Full Image Visibility ===== */
+:root{
+  --bn-green:#006a4e;
+  --bn-green-dark:#004d3a;
+  --bn-red:#e31b23;
+  --bn-gold:#f4c542;
+  --bn-ink:#17212b;
+  --bn-muted:#64748b;
+  --bn-bg:#f3f6f8;
+  --bn-card:#ffffff;
+  --bn-border:#e2e8f0;
+  --bn-shadow:0 8px 24px rgba(15,23,42,.08);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bn-bg)!important;color:var(--bn-ink)!important;}
+
+/* Header: only presentation changed; existing logo/date/HTML stay untouched */
+.site-header{
+  background:linear-gradient(135deg,var(--bn-green-dark) 0%,var(--bn-green) 58%,#0b2f45 100%)!important;
+  border-bottom:4px solid var(--bn-red)!important;
+  box-shadow:0 4px 18px rgba(0,0,0,.14)!important;
+  position:relative;
+  overflow:hidden;
+}
+.site-header:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--bn-red) 0 33%,var(--bn-gold) 33% 66%,#16a05d 66% 100%);
+  z-index:1;
+}
+.site-header:after{
+  content:"";position:absolute;width:330px;height:330px;border:1px solid rgba(255,255,255,.09);
+  border-radius:50%;right:-150px;top:-170px;box-shadow:0 0 0 45px rgba(255,255,255,.025),0 0 0 90px rgba(255,255,255,.018);
+  pointer-events:none;
+}
+.site-header .header-inner{position:relative;z-index:2;}
+.site-header .logo-image,.site-header .site-brand-logo{
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.22));
+}
+.site-header .logo{background:rgba(255,255,255,.96);border-radius:14px;padding:6px 12px;box-shadow:0 8px 22px rgba(0,0,0,.18);}
+.site-header #live-date{color:#fff!important;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.18);padding:8px 12px;border-radius:10px;}
+
+/* Navigation */
+.nav{background:var(--bn-green-dark)!important;border-bottom:1px solid rgba(255,255,255,.12)!important;box-shadow:0 3px 10px rgba(0,0,0,.08);}
+.nav a{transition:background .18s ease,transform .18s ease!important;}
+.nav a:hover{background:var(--bn-red)!important;transform:translateY(-1px);}
+
+/* Breaking news / ticker */
+.breaking{border-radius:10px!important;box-shadow:var(--bn-shadow)!important;border:1px solid var(--bn-border)!important;overflow:hidden;}
+.breaking strong,.news-ticker-label{background:var(--bn-red)!important;color:#fff!important;}
+.news-ticker{border:1px solid var(--bn-border)!important;box-shadow:var(--bn-shadow)!important;border-radius:10px!important;}
+
+/* Section headings */
+.page-title,.section-title{color:var(--bn-green-dark)!important;border-left-color:var(--bn-red)!important;}
+
+/* Cards */
+.news-grid .news-card,.news-card{
+  background:var(--bn-card)!important;
+  border:1px solid var(--bn-border)!important;
+  border-radius:12px!important;
+  box-shadow:var(--bn-shadow)!important;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.news-grid .news-card:hover,.news-card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.12)!important;border-color:#cbd5e1!important;}
+.news-card h2,.news-card h3{color:var(--bn-ink)!important;}
+.category,.category-tag{color:var(--bn-red)!important;}
+.read-more-btn{background:var(--bn-green)!important;border-radius:7px!important;box-shadow:0 4px 10px rgba(0,106,78,.18);}
+.read-more-btn:hover{background:var(--bn-red)!important;}
+
+/* IMPORTANT: never crop article/card images on desktop or mobile */
+.news-grid .news-card > img,
+.news-grid .news-card .news-image img,
+.news-grid .news-card .news-image-wrap img,
+.news-grid .news-card .news-primary-image img,
+#news-grid .news-image-wrap img,
+#news-container .news-image-wrap img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  max-height:520px!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  background:#fff!important;
+}
+.news-grid .news-card .news-image,
+.news-grid .news-card .news-image-wrap,
+.news-grid .news-card .news-primary-image,
+#news-grid .news-image-wrap,
+#news-container .news-image-wrap{
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+/* Keep text/card spacing clean after removing the fixed image crop */
+#news-grid .news-card-content,#news-container .news-details{background:#fff!important;}
+
+/* Article/detail page image: show the full image */
+.details-container>img,.detail-inline-media img,.reader-inline-media img{
+  width:100%!important;height:auto!important;max-height:620px!important;object-fit:contain!important;background:#fff!important;
+}
+
+/* Side/latest blocks */
+.side-news,.latest-news,.latest-container{border-radius:10px;}
+
+/* Footer */
+.site-footer,.footer{background:linear-gradient(135deg,#071f2b,#003b2b)!important;border-top:4px solid var(--bn-red)!important;}
+
+/* Mobile: preserve one-column/responsive behavior, only polish spacing */
+@media(max-width:768px){
+  body{overflow-x:hidden;}
+  .site-header .logo{box-shadow:0 6px 16px rgba(0,0,0,.16);}
+  .site-header #live-date{background:rgba(0,0,0,.18);}
+  .news-grid .news-card:hover,.news-card:hover{transform:none;}
+  .news-grid .news-card > img,
+  .news-grid .news-card .news-image img,
+  .news-grid .news-card .news-image-wrap img,
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img{
+    max-height:420px!important;
+    object-fit:contain!important;
+  }
+  .details-container>img,.detail-inline-media img,.reader-inline-media img{max-height:520px!important;object-fit:contain!important;}
+}
+@media(max-width:380px){
+  .news-grid .news-card > img,
+  .news-grid .news-card .news-image img,
+  .news-grid .news-card .news-image-wrap img,
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img{max-height:360px!important;}
+}
+</style>
+<style id="premium-final-fix">.news-card img,.news-item img,.card img,.headline-card img{width:100%;height:auto;max-height:420px;object-fit:contain;display:block}.site-header{background:linear-gradient(135deg,#063b2b,#075b43,#0b2638)!important;border-bottom:4px solid #e31b23!important}</style>
+
+<style id="logo-transparent-final-fix">
+/* Final logo-only adjustment: remove white panel and lift logo slightly. */
+.site-header .logo{
+  background:transparent!important;
+  border-radius:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  top:44%!important;
+}
+.site-header .logo-image,.site-header .site-brand-logo{
+  background:transparent!important;
+}
+@media (max-width:768px){
+  .site-header .logo{top:43%!important;}
+}
+</style>
+
+
+<style id="final-all-pages-theme-sync">
+/* FINAL THEME SYNC: presentation-only. Existing HTML/content/functionality untouched. */
+
+/* Header used by the homepage */
+.site-header{
+  background:linear-gradient(135deg,#004d3a 0%,#006a4e 58%,#0b2f45 100%)!important;
+  border-bottom:4px solid #e31b23!important;
+  box-shadow:0 4px 18px rgba(0,0,0,.14)!important;
+}
+.site-header:before{
+  content:""!important;position:absolute!important;left:0!important;right:0!important;top:0!important;height:4px!important;
+  background:linear-gradient(90deg,#e31b23 0 33%,#f4c542 33% 66%,#16a05d 66% 100%)!important;
+  z-index:1!important;
+}
+.site-header .logo{background:transparent!important;border-radius:0!important;padding:0!important;box-shadow:none!important;}
+.site-header .logo-image,.site-header .site-brand-logo{filter:drop-shadow(0 4px 8px rgba(0,0,0,.22))!important;background:transparent!important;}
+.site-header #live-date{color:#fff!important;background:rgba(0,0,0,.20)!important;border:1px solid rgba(255,255,255,.18)!important;}
+
+/* Existing navigation/menu bar */
+.nav{
+  background:linear-gradient(90deg,#003d2e,#00563f,#08263a)!important;
+  border-bottom:3px solid #e31b23!important;
+  box-shadow:0 4px 12px rgba(0,0,0,.18)!important;
+}
+.nav-inner{background:transparent!important;}
+.nav a{
+  color:#fff!important;
+  font-weight:700!important;
+  transition:all .18s ease!important;
+}
+.nav a:hover,.nav a.active{
+  background:#e31b23!important;
+  color:#fff!important;
+  transform:translateY(-1px)!important;
+}
+
+/* Existing inner-page logo/header bar */
+.brand-header{
+  position:relative!important;
+  background:linear-gradient(135deg,#004d3a 0%,#006a4e 58%,#0b2f45 100%)!important;
+  border-bottom:4px solid #e31b23!important;
+  box-shadow:0 4px 18px rgba(0,0,0,.14)!important;
+}
+.brand-header:before{
+  content:""!important;position:absolute!important;left:0!important;right:0!important;top:0!important;height:4px!important;
+  background:linear-gradient(90deg,#e31b23 0 33%,#f4c542 33% 66%,#16a05d 66% 100%)!important;
+}
+.brand-header .site-brand-logo{
+  background:transparent!important;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.24))!important;
+}
+.brand-header .back-btn{
+  background:#e31b23!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.25)!important;
+  border-radius:7px!important;
+  padding:7px 13px!important;
+  font-weight:700!important;
+  text-decoration:none!important;
+  box-shadow:0 3px 8px rgba(0,0,0,.16)!important;
+}
+.brand-header .back-btn:hover{
+  background:#006a4e!important;
+  color:#fff!important;
+}
+
+/* Existing footer */
+.site-footer{
+  background:linear-gradient(135deg,#0b2638 0%,#071b2a 100%)!important;
+  color:#fff!important;
+  border-top:4px solid #006a4e!important;
+  box-shadow:0 -4px 18px rgba(0,0,0,.10)!important;
+}
+.site-footer h3{color:#fff!important;}
+.site-footer p{color:#dbe7ed!important;}
+.site-footer a{color:#fff!important;}
+.site-footer a:hover{color:#f4c542!important;text-decoration:none!important;}
+@media(max-width:768px){
+  .brand-header .back-btn{padding:6px 10px!important;font-size:13px!important;}
+}
+</style>
+
+
+<style id="desktop-news-images-no-crop-final">
+/* Desktop-only fix: preserve the full news image; do not crop Sheet images. Mobile rules remain unchanged. */
+@media (min-width:769px){
+  .news-card img,
+  .news-image img,
+  .news-image-wrap img,
+  .details-container>img,
+  .detail-inline-media img{
+    width:100% !important;
+    height:auto !important;
+    max-height:520px !important;
+    aspect-ratio:auto !important;
+    object-fit:contain !important;
+    object-position:center !important;
+    display:block !important;
+  }
+}
+</style>
+
+
+<style id="final-desktop-news-no-crop-v2">
+/* FINAL V2: Desktop news images keep their original aspect ratio; only the six homepage category cards keep their fixed 410x170 frame. */
+@media (min-width:769px){
+  .news-grid .news-card .news-image-wrap,
+  .news-grid .news-card .news-primary-image,
+  .news-grid .news-card .news-image-top,
+  #news-grid .news-image-wrap,
+  #news-container .news-image-wrap,
+  #news-grid .news-primary-image,
+  #news-container .news-primary-image {
+    width:100% !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  .news-grid .news-card .news-image-wrap img,
+  .news-grid .news-card .news-primary-image img,
+  .news-grid .news-card .news-image-top img,
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img,
+  #news-grid .news-primary-image img,
+  #news-container .news-primary-image img {
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    max-height:none !important;
+    aspect-ratio:auto !important;
+    object-fit:contain !important;
+    object-position:center !important;
+  }
+}
+</style>
+
+<style id="universal-any-image-no-crop-final">
+/* Universal image handling: any Google Sheet / dynamic news image keeps its original aspect ratio.
+   No manual width/height is required and no part of the image is cropped. */
+.news-grid .news-card .news-image-wrap,
+.news-grid .news-card .news-image-top,
+#news-grid .news-image-wrap,
+#news-container .news-image-wrap,
+.news-image-wrap,
+.news-image-top,
+.sheet-media-gallery,
+.inline-media,
+.detail-inline-media,
+.reader-inline-media {
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  overflow:visible!important;
+}
+.news-grid .news-card .news-image-wrap img,
+.news-grid .news-card .news-image-top img,
+#news-grid .news-image-wrap img,
+#news-container .news-image-wrap img,
+.news-image-wrap img,
+.news-image-top img,
+.sheet-media-gallery img,
+.inline-media img,
+.detail-inline-media img,
+.reader-inline-media img,
+.details-container>img {
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+@media(max-width:768px){
+  .news-grid .news-card .news-image-wrap,
+  .news-grid .news-card .news-image-top,
+  #news-grid .news-image-wrap,
+  #news-container .news-image-wrap,
+  .news-image-wrap, .news-image-top {
+    height:auto!important; max-height:none!important; aspect-ratio:auto!important; overflow:visible!important;
+  }
+  .news-grid .news-card .news-image-wrap img,
+  .news-grid .news-card .news-image-top img,
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img,
+  .news-image-wrap img, .news-image-top img {
+    width:100%!important; height:auto!important; max-height:none!important; aspect-ratio:auto!important; object-fit:contain!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="news-ticker" aria-label="সর্বশেষ বার্তা"><div class="news-ticker-label">বিশেষ বার্তা</div><div class="news-ticker-track"><span class="news-ticker-text">সত্য ও নির্ভরযোগ্য সংবাদ জানতে চোখ রাখুন বাংলা সংবাদের সঙ্গে—তথ্য যাচাই করে, দায়িত্বশীলতার সঙ্গে প্রতিটি গুরুত্বপূর্ণ খবর পৌঁছে দিতে আমরা আছি আপনাদের পাশে।</span></div></div>
