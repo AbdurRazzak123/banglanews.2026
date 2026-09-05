@@ -613,6 +613,271 @@ body{background:var(--bn-bg)!important;color:var(--bn-ink)!important;}
 }
 </style>
 
+
+<style id="desktop-natural-image-width-final">
+/* Desktop only: slightly narrow dynamic news image frame so the natural image height
+   becomes visible. This pushes the headline naturally downward and prevents cropping.
+   Mobile is intentionally untouched because it is already correct. */
+@media (min-width:769px){
+  .vertical-news-block .news-image-top,
+  #news-container .news-image-wrap,
+  #news-grid .news-image-wrap,
+  .news-grid .news-card .news-image-wrap {
+    width: min(92%, 920px) !important;
+    max-width: 920px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .vertical-news-block .news-image-top img,
+  #news-container .news-image-wrap img,
+  #news-grid .news-image-wrap img,
+  .news-grid .news-card .news-image-wrap img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+}
+</style>
+
+
+<style id="details-style-image-width-final">
+/* Match the current Details-page image content width on desktop.
+   Keep equal left/right space; keep mobile responsive. */
+@media (min-width:769px){
+  .news-grid .news-card .news-image-wrap,
+  .news-grid .news-card .news-image-top,
+  #news-grid .news-image-wrap,
+  #news-container .news-image-wrap,
+  .vertical-news-block .news-image-top {
+    width:100% !important;
+    max-width:798px !important;
+    height:auto !important;
+    max-height:none !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    overflow:visible !important;
+  }
+  .news-grid .news-card .news-image-wrap img,
+  .news-grid .news-card .news-image-top img,
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img,
+  .vertical-news-block .news-image-top img {
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    max-height:none !important;
+    aspect-ratio:auto !important;
+    object-fit:contain !important;
+    object-position:center !important;
+  }
+}
+@media (max-width:768px){
+  .news-grid .news-card .news-image-wrap,
+  .news-grid .news-card .news-image-top,
+  #news-grid .news-image-wrap,
+  #news-container .news-image-wrap,
+  .vertical-news-block .news-image-top {
+    width:100% !important;
+    max-width:none !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+}
+</style>
+
+
+<style id="details-style-three-line-final">
+/* Show exactly three lines of the existing news summary before the existing Read More link. */
+.home-summary,.news-summary{
+  display:-webkit-box !important;
+  -webkit-box-orient:vertical !important;
+  -webkit-line-clamp:3 !important;
+  overflow:hidden !important;
+}
+</style>
+
+
+<style id="final-news-image-full-width-natural-height">
+/* Final image sizing: fill the existing news area on desktop; keep the image uncropped.
+   Height remains automatic, so a wider image becomes naturally taller. Details page untouched. */
+@media (min-width:769px){
+  #news-grid .news-image-wrap,
+  #news-container .news-image-wrap,
+  .news-grid .news-card .news-image-wrap,
+  .news-grid .news-card .news-image-top,
+  .vertical-news-block .news-image-top {
+    width:calc(100% + 40px) !important;
+    max-width:none !important;
+    height:auto !important;
+    max-height:none !important;
+    margin-left:-20px !important;
+    margin-right:-20px !important;
+    overflow:visible !important;
+  }
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img,
+  .news-grid .news-card .news-image-wrap img,
+  .news-grid .news-card .news-image-top img,
+  .vertical-news-block .news-image-top img {
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    max-width:none !important;
+    max-height:none !important;
+    aspect-ratio:auto !important;
+    object-fit:contain !important;
+    object-position:center !important;
+  }
+}
+</style>
+
+<style id="final-news-content-narrow-full-image">
+/* Final listing-page width: slightly narrower content so the full image is visible cleanly. Details page is untouched. */
+@media (min-width:769px){
+  .container:has(#news-grid),
+  .container:has(#news-container){
+    width:92% !important;
+    max-width:850px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    box-sizing:border-box !important;
+  }
+  #news-grid .news-image-wrap,
+  #news-container .news-image-wrap,
+  .news-grid .news-card .news-image-wrap,
+  .news-grid .news-card .news-image-top,
+  .vertical-news-block .news-image-top{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    max-height:none !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    overflow:visible !important;
+  }
+  #news-grid .news-image-wrap img,
+  #news-container .news-image-wrap img,
+  .news-grid .news-card .news-image-wrap img,
+  .news-grid .news-card .news-image-top img,
+  .vertical-news-block .news-image-top img{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    max-width:100% !important;
+    max-height:none !important;
+    aspect-ratio:auto !important;
+    object-fit:contain !important;
+    object-position:center !important;
+  }
+}
+</style>
+
+
+<style id="all-listing-pages-width-1050">
+/* Listing pages: 1050px content width. Details page is intentionally excluded. */
+@media (min-width:769px){
+  .container{width:92% !important; max-width:1050px !important; margin-left:auto !important; margin-right:auto !important; box-sizing:border-box !important;}
+}
+/* Google Sheet news order: image → date → headline → details */
+.news-grid .news-card{display:flex;flex-direction:column;}
+.news-grid .news-card .news-image-wrap,.news-grid .news-card .news-image-top,.vertical-news-block .news-image-top{order:1;}
+.news-grid .news-card .news-details,.vertical-news-block .news-text-bottom{order:2;}
+.news-grid .news-card .news-details{display:flex;flex-direction:column;}
+.news-grid .news-card .news-details .news-date{order:1;}
+.news-grid .news-card .news-details h2,.news-grid .news-card .news-details h3{order:2;}
+.news-grid .news-card .news-details .home-summary,.news-grid .news-card .news-details .news-summary{order:3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;line-height:1.75;}
+.news-grid .news-card .news-details .read-more-btn{order:4;align-self:flex-start;}
+@media (min-width:769px){
+  .news-grid .news-card .news-image-wrap,.news-grid .news-card .news-image-top,.vertical-news-block .news-image-top{width:100% !important;max-width:100% !important;height:auto !important;max-height:none !important;margin-left:0 !important;margin-right:0 !important;overflow:visible !important;}
+  .news-grid .news-card .news-image-wrap img,.news-grid .news-card .news-image-top img,.vertical-news-block .news-image-top img{width:100% !important;height:auto !important;max-width:100% !important;max-height:none !important;aspect-ratio:auto !important;object-fit:contain !important;object-position:center !important;display:block !important;}
+}
+</style>
+
+
+<style id="FINAL-SEPARATE-IMAGE-FROM-NEWS-TEXT">
+/* ছবি এবং নিউজ লেখা আলাদা অংশ — Details পেজে প্রয়োগ করা হয়নি */
+.news-grid .news-card, #news-grid .news-card {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+.news-grid .news-card .news-image-wrap,
+#news-grid .news-card .news-image-wrap,
+.news-grid .news-card > .news-image,
+#news-grid .news-card > .news-image {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 0 16px 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.news-grid .news-card .news-image-wrap img,
+#news-grid .news-card .news-image-wrap img,
+.news-grid .news-card > .news-image img,
+#news-grid .news-card > .news-image img {
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+.news-grid .news-card .news-details,
+#news-grid .news-card .news-card-content,
+#news-container .news-card .news-details {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.news-grid .news-card + .news-card {
+  border-top: none !important;
+  padding-top: 0 !important;
+}
+/* Home/index-এর বড় খবর: ছবির ব্লক ও লেখার ব্লক আলাদা */
+.vertical-news-block {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+.vertical-news-block .news-image-top {
+  margin: 0 0 16px 0 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.vertical-news-block .news-image-top img {
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+.vertical-news-block .news-text-bottom {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+</style>
+
 </head>
 <body>
 <div class="news-ticker" aria-label="সর্বশেষ বার্তা"><div class="news-ticker-label">বিশেষ বার্তা</div><div class="news-ticker-track"><span class="news-ticker-text">সত্য ও নির্ভরযোগ্য সংবাদ জানতে চোখ রাখুন বাংলা সংবাদের সঙ্গে—তথ্য যাচাই করে, দায়িত্বশীলতার সঙ্গে প্রতিটি গুরুত্বপূর্ণ খবর পৌঁছে দিতে আমরা আছি আপনাদের পাশে।</span></div></div>
@@ -639,7 +904,7 @@ function imageUrl(url){
 }
 
 function image1(n){return n.image?`<div class="news-image-wrap"><img loading="lazy" src="${esc(imageUrl(n.image))}" alt="${esc(n.title)}" onerror="this.closest('.news-image-wrap')?.remove()"></div>`:'';}
-function card(n,catLabel){return `<div class="news-card" id="news-${esc(n.id)}">${image1(n)}<div class="news-details"><span class="category-tag">${esc(catLabel||n.category)}</span><span class="news-date">${esc(n.date)}</span><h3>${esc(n.title)}</h3><p class="home-summary">${esc(n.summary)}</p><a class="read-more-btn" href="details.html?id=${encodeURIComponent(n.id)}" data-news-id="${esc(n.id)}">আরও পড়ুন</a></div></div>`;}
+function card(n,catLabel){return `<div class="news-card" id="news-${esc(n.id)}">${image1(n)}<div class="news-details"><span class="news-date">${esc(n.date)}</span><h3>${esc(n.title)}</h3><p class="home-summary">${esc(n.summary)}</p><a class="read-more-btn" href="details.html?id=${encodeURIComponent(n.id)}" data-news-id="${esc(n.id)}">আরও পড়ুন</a></div></div>`;}
 function latest(list){return [...list].reverse();}
 
 const ALLOWED=['technology', 'tech', 'প্রযুক্তি'];
