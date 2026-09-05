@@ -1249,67 +1249,6 @@ section.news-grid > article:nth-child(6) .news-image img {
 }
 </style>
 
-
-<style id="desktop-natural-image-width-final">
-/* Desktop only: slightly narrow dynamic news image frame so the natural image height
-   becomes visible. This pushes the headline naturally downward and prevents cropping.
-   Mobile is intentionally untouched because it is already correct. */
-@media (min-width:769px){
-  .vertical-news-block .news-image-top,
-  #news-container .news-image-wrap,
-  #news-grid .news-image-wrap,
-  .news-grid .news-card .news-image-wrap {
-    width: min(92%, 920px) !important;
-    max-width: 920px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  .vertical-news-block .news-image-top img,
-  #news-container .news-image-wrap img,
-  #news-grid .news-image-wrap img,
-  .news-grid .news-card .news-image-wrap img {
-    width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    aspect-ratio: auto !important;
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-}
-</style>
-
-
-<style id="desktop-match-mobile-natural-ratio-final">
-/* Desktop: use the same natural image-ratio behavior as mobile. Mobile rules remain untouched. */
-@media (min-width:769px){
-  .vertical-news-block .news-image-top{
-    width:92%!important;
-    max-width:920px!important;
-    height:auto!important;
-    max-height:none!important;
-    margin:0 auto!important;
-    overflow:visible!important;
-    aspect-ratio:auto!important;
-  }
-  .vertical-news-block .news-image-top img{
-    display:block!important;
-    width:100%!important;
-    height:auto!important;
-    max-height:none!important;
-    aspect-ratio:auto!important;
-    object-fit:contain!important;
-    object-position:center!important;
-  }
-  .vertical-news-block .news-text-bottom{
-    width:92%!important;
-    max-width:920px!important;
-    margin:0 auto!important;
-    box-sizing:border-box!important;
-  }
-}
-</style>
-
 </head>
 
 <body>

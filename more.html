@@ -621,36 +621,6 @@ body{background:var(--bn-bg)!important;color:var(--bn-ink)!important;}
 }
 </style>
 
-
-<style id="desktop-natural-image-width-final">
-/* Desktop only: slightly narrow dynamic news image frame so the natural image height
-   becomes visible. This pushes the headline naturally downward and prevents cropping.
-   Mobile is intentionally untouched because it is already correct. */
-@media (min-width:769px){
-  .vertical-news-block .news-image-top,
-  #news-container .news-image-wrap,
-  #news-grid .news-image-wrap,
-  .news-grid .news-card .news-image-wrap {
-    width: min(92%, 920px) !important;
-    max-width: 920px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  .vertical-news-block .news-image-top img,
-  #news-container .news-image-wrap img,
-  #news-grid .news-image-wrap img,
-  .news-grid .news-card .news-image-wrap img {
-    width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    aspect-ratio: auto !important;
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-}
-</style>
-
 </head>
 <body>
 <div class="news-ticker" aria-label="সর্বশেষ বার্তা"><div class="news-ticker-label">বিশেষ বার্তা</div><div class="news-ticker-track"><span class="news-ticker-text">সত্য ও নির্ভরযোগ্য সংবাদ জানতে চোখ রাখুন বাংলা সংবাদের সঙ্গে—তথ্য যাচাই করে, দায়িত্বশীলতার সঙ্গে প্রতিটি গুরুত্বপূর্ণ খবর পৌঁছে দিতে আমরা আছি আপনাদের পাশে।</span></div></div>
