@@ -554,7 +554,6 @@ body{background:var(--bn-bg)!important;color:var(--bn-ink)!important;}
 <img id="news-img" src="" alt="">
 <h1 id="news-title">খবর লোড হচ্ছে...</h1>
 <div class="meta-info"><span class="cat" id="news-cat"></span><span id="news-date"></span><span class="news-author" id="news-author">প্রতিবেদক: বাংলা সংবাদ ডেস্ক</span></div>
-<div id="news-keywords" class="news-keywords" aria-label="সংবাদের কিওয়ার্ড"></div>
 <div class="ad-slot in-article sheet-ad-slot middle" data-ad-position="middle-top" data-ad-slot="middle-top" id="article-ad-1" aria-label="বিজ্ঞাপন"></div>
 <p class="full-content" id="news-content">অনুগ্রহ করে অপেক্ষা করুন...</p>
 <div id="detail-media-slot"></div>
@@ -601,7 +600,6 @@ fetch(jsonUrl+'&_='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{
   let canonical=document.querySelector('link[rel="canonical"]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical)}canonical.href=pageUrl;
   document.title=n.title+' | বাংলা সংবাদ';
   setMeta('description',description);setMeta('keywords',seoKeywords.join(', '));setProp('article:section',n.category||'সংবাদ');setProp('og:title',n.title);setProp('og:description',description);setProp('og:url',pageUrl);setProp('og:type','article');
-  const keywordBox=document.getElementById('news-keywords');if(keywordBox){keywordBox.innerHTML='<span class="keyword-label">কিওয়ার্ড:</span>'+seoKeywords.map(k=>'<span class="keyword-chip">'+esc(k)+'</span>').join('');}
   const author=document.getElementById('news-author');if(author)author.textContent='প্রতিবেদক: বাংলা সংবাদ ডেস্ক';
   document.getElementById('news-title').textContent=n.title;
   document.getElementById('news-cat').textContent=n.category;
