@@ -612,7 +612,7 @@ fetch(jsonUrl+'&_='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{
     const m=raw.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^#]*&)?id=)([A-Za-z0-9_-]+)/i);
     return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w2000` : raw;
   }
-  const BASE_URL='https://abdurrazzak123.github.io/Banglanews-test/';
+  const BASE_URL='https://abdurrazzak123.github.io/banglanews.2026/';
   let heroImage='';
   if(n.image){heroImage=imageUrl(n.image);hero.src=heroImage;hero.alt=n.title}else hero.remove();
 
