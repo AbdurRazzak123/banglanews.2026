@@ -1,6 +1,6 @@
 /*
- * বাংলা সংবাদ — FINAL Ads Loader v24
- * Same direct rendering engine used by the working ad slots + smart row retry.
+ * বাংলা সংবাদ — FINAL Ads Loader v19
+ * Direct execution + safe sequential rendering.
  * Google Sheet Ads columns: A Position | B Active | C Image URL | D Click URL | E Title | F Ad Code
  * Supported: TOP, MIDDLE TOP, MIDDLE BOTTOM, BOTTOM, ALL, MIDDLE
  */
@@ -11,11 +11,11 @@
   const SHEET_NAME = 'Ads';
   const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
     '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
-  const VERSION = 'ads-v24-same-as-working-direct-final';
+  const VERSION = 'ads-v20-final-direct-test-fallback';
   // Built-in diagnostic fallback: this is NOT a paid/network ad. Set to false to hide it.
   const ENABLE_TEST_FALLBACK = true;
-  const SHEET_TIMEOUT_MS = 5000;
-  const CODE_TIMEOUT_MS = 4500;
+  const WAIT_MS = 10000;
+  const MAX_HEIGHT = 700;
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const value = (row, i) => row && row.c && row.c[i] && row.c[i].v != null ? String(row.c[i].v).trim() : '';
@@ -68,13 +68,11 @@
     return '';
   }
 
-  function candidates(groups, p) {
-    const out = [];
-    const add = arr => { if (Array.isArray(arr)) arr.forEach(ad => { if (ad && !out.includes(ad)) out.push(ad); }); };
-    add(groups[p]);
-    add(groups.ALL);
-    if (p === 'MIDDLE_TOP' || p === 'MIDDLE_BOTTOM') add(groups.MIDDLE);
-    return out;
+  function choose(groups, p) {
+    if (groups[p] && groups[p].length) return groups[p][0];
+    if (groups.ALL && groups.ALL.length) return groups.ALL[0];
+    if ((p === 'MIDDLE_TOP' || p === 'MIDDLE_BOTTOM') && groups.MIDDLE && groups.MIDDLE.length) return groups.MIDDLE[0];
+    return null;
   }
 
   function clear(slot) {
@@ -182,14 +180,12 @@
       await runScriptsSequentially(host, scripts);
       restore();
 
-      const started = performance.now();
-      const checks = [100,300,700,1200,2000,3200,4500];
-      let previous = 0;
+      const checks = [100,500,1000,2000,4000,7000,9500];
       for (const ms of checks) {
-        await sleep(Math.max(0, ms - previous)); previous = ms;
+        await sleep(ms - (checks[checks.indexOf(ms)-1] || 0));
         if (hasCreative(host)) { mark(slot, title, 'code'); return true; }
-        if (performance.now() - started >= CODE_TIMEOUT_MS) break;
       }
+      // A provider may render into a wrapper without an immediately measurable creative.
       if (host.children.length && host.getBoundingClientRect().height > 2) { mark(slot, title, 'code'); return true; }
       clear(slot); return false;
     } catch (e) {
@@ -215,32 +211,24 @@
     return true;
   }
 
-  async function render(slot, ads) {
-    clear(slot);
-    if (!ads || !ads.length) return testFallback(slot, 'No active ad found in Google Sheet');
-    // Try every matching row, not only the first one. This prevents one bad TOP/MIDDLE row
-    // from blocking a valid ad later in the same position.
-    for (const ad of ads) {
-      if (ad.code) {
-        const ok = await executeDirect(slot, ad.code, ad.title);
-        if (ok) return true;
-      }
-      if (imageAd(slot, ad.image, ad.click, ad.title)) return true;
+  async function render(slot, ad) {
+    clear(slot); if (!ad) return testFallback(slot, 'No active ad found in Google Sheet');
+    if (ad.code) {
+      const ok = await executeDirect(slot, ad.code, ad.title);
+      if (ok) return true;
     }
-    return testFallback(slot, 'Matching ad rows were found, but none could render');
+    if (imageAd(slot, ad.image, ad.click, ad.title)) return true;
+    return testFallback(slot, 'Ad code/image could not render');
   }
 
   async function fetchSheet() {
     let last;
-    for (let i=0; i<2; i++) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), SHEET_TIMEOUT_MS);
+    for (let i=0; i<3; i++) {
       try {
-        const r = await fetch(SHEET_URL + '&_=' + Date.now() + '-' + i, {cache:'no-store',credentials:'omit',redirect:'follow',signal:controller.signal});
+        const r = await fetch(SHEET_URL + '&_=' + Date.now() + '-' + i, {cache:'no-store',credentials:'omit',redirect:'follow'});
         if (!r.ok) throw new Error('Google Sheet HTTP ' + r.status);
         return parseGViz(await r.text());
-      } catch (e) { last=e; if (i<1) await sleep(250); }
-      finally { clearTimeout(timer); }
+      } catch (e) { last=e; if (i<2) await sleep(700*(i+1)); }
     }
     throw last || new Error('Google Sheet request failed');
   }
@@ -259,7 +247,7 @@
         const ad={image:value(row,2),click:value(row,3),title:value(row,4),code:value(row,5)};
         if (ad.code || ad.image) groups[p].push(ad);
       });
-      await Promise.all(list.map((slot,i) => { const p=slotPos(slot,i,list.length); return render(slot,candidates(groups,p)); }));
+      for (let i=0;i<list.length;i++) { const p=slotPos(list[i],i,list.length); await render(list[i],choose(groups,p)); }
     } catch(e) {
       console.warn('Google Sheet Ads load failed:',e);
       list.forEach(s => {
