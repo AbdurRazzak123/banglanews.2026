@@ -1,50 +1,261 @@
-/* বাংলা সংবাদ — Google Sheet controlled Ads
-   Ads sheet columns:
-   A Position | B Active | C Image URL | D Click URL | E Title | F Ad Code
+/*
+ * বাংলা সংবাদ — FINAL Ads Loader v19
+ * Direct execution + safe sequential rendering.
+ * Google Sheet Ads columns: A Position | B Active | C Image URL | D Click URL | E Title | F Ad Code
+ * Supported: TOP, MIDDLE TOP, MIDDLE BOTTOM, BOTTOM, ALL, MIDDLE
+ */
+(function () {
+  'use strict';
 
-   Priority:
-   1) F (Ad Code) when supplied
-   2) Otherwise C + D + E (image/link ad)
-*/
-(function(){
-'use strict';
-const SHEET_ID='1gX73WskIs3D-8IcyPJ24NT0xn1KIEJSjMXOF9nCQqTg';
-const URL='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Ads';
-const requestUrl=()=>URL+'&_='+Date.now();
-const val=(r,i)=>r&&r.c&&r.c[i]&&r.c[i].v!=null?String(r.c[i].v).trim():'';
-function parse(raw){const a=raw.indexOf('{'),b=raw.lastIndexOf('}')+1;if(a<0||b<=a)throw Error('Invalid Ads response');const d=JSON.parse(raw.slice(a,b));return d.table?.rows||[];}
-function active(v){v=v.toLowerCase().trim();return !v||['yes','true','1','active','on','হ্যাঁ','চালু'].includes(v);}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function safeUrl(s){const u=String(s||'').trim();return /^(https?:|mailto:|tel:)/i.test(u)?u:'#';}
-function imageAd(img,click,title){
-  const src=safeUrl(img), href=safeUrl(click), alt=esc(title||'Advertisement');
-  if(src==='#') return '';
-  const image='<img src="'+esc(src)+'" alt="'+alt+'" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover;border:0;margin:0;padding:0">';
-  return '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;height:100%;text-decoration:none">'+image+'</a>';
-}
-function runScripts(slot){
-  slot.querySelectorAll('script').forEach(old=>{const s=document.createElement('script');for(const a of old.attributes)s.setAttribute(a.name,a.value);s.text=old.text||old.textContent||'';old.replaceWith(s);});
-}
-function load(){
- fetch(requestUrl(),{cache:'no-store'}).then(r=>r.text()).then(parse).then(rows=>{
-   const ads={TOP:null,MIDDLE:null,BOTTOM:null};
-   rows.forEach(r=>{
-     const pos=val(r,0).toUpperCase();
-     if(!Object.prototype.hasOwnProperty.call(ads,pos)||!active(val(r,1))) return;
-     ads[pos]={code:val(r,5),image:val(r,2),click:val(r,3),title:val(r,4)};
-   });
-   Object.keys(ads).forEach(pos=>{
-     const ad=ads[pos];
-     if(!ad) return;
-     document.querySelectorAll('[data-ad-slot="'+pos.toLowerCase()+'"]').forEach(slot=>{
-       const content=ad.code || imageAd(ad.image,ad.click,ad.title);
-       if(!content) return;
-       slot.innerHTML=content;
-       runScripts(slot);
-       slot.classList.add('ad-loaded');
-     });
-   });
- }).catch(e=>console.warn('Google Sheet Ads load failed:',e));
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+  const SHEET_ID = '1gX73WskIs3D-8IcyPJ24NT0xn1KIEJSjMXOF9nCQqTg';
+  const SHEET_NAME = 'Ads';
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
+  const VERSION = 'ads-v20-final-direct-test-fallback';
+  // Built-in diagnostic fallback: this is NOT a paid/network ad. Set to false to hide it.
+  const ENABLE_TEST_FALLBACK = true;
+  const WAIT_MS = 10000;
+  const MAX_HEIGHT = 700;
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const value = (row, i) => row && row.c && row.c[i] && row.c[i].v != null ? String(row.c[i].v).trim() : '';
+
+  function parseGViz(raw) {
+    const a = raw.indexOf('{'), b = raw.lastIndexOf('}') + 1;
+    if (a < 0 || b <= a) throw new Error('Invalid Google Sheet response');
+    const data = JSON.parse(raw.slice(a, b));
+    if (data.status && data.status !== 'ok') throw new Error('Google Sheet status: ' + data.status);
+    return data.table && Array.isArray(data.table.rows) ? data.table.rows : [];
+  }
+
+  function active(v) {
+    const x = String(v || '').trim().toLowerCase();
+    return !x || ['yes','true','1','active','on','হ্যাঁ','চালু'].includes(x);
+  }
+
+  function pos(v) {
+    const p = String(v || '').toUpperCase().trim().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ');
+    if (p === 'TOP') return 'TOP';
+    if (p === 'BOTTOM' || p === 'FOOTER') return 'BOTTOM';
+    if (p === 'MIDDLE TOP' || p === 'MIDDLETOP') return 'MIDDLE_TOP';
+    if (p === 'MIDDLE BOTTOM' || p === 'MIDDLEBOTTOM') return 'MIDDLE_BOTTOM';
+    if (p === 'MIDDLE') return 'MIDDLE';
+    if (p === 'ALL' || p === 'EVERYWHERE' || p === 'ALL POSITIONS') return 'ALL';
+    return '';
+  }
+
+  function url(v) {
+    const x = String(v || '').trim();
+    return /^(https?:|mailto:|tel:|\/\/)/i.test(x) ? x : '';
+  }
+
+  function slots() {
+    const out = [], seen = new Set();
+    document.querySelectorAll('.sheet-ad-slot, .ad-slot').forEach(el => {
+      if (seen.has(el)) return;
+      if (!el.matches('.sheet-ad-slot') && !el.hasAttribute('data-ad-slot') && !el.hasAttribute('data-ad-position')) return;
+      seen.add(el); out.push(el);
+    });
+    return out;
+  }
+
+  function slotPos(slot, i, total) {
+    const explicit = pos(slot.getAttribute('data-ad-position') || slot.getAttribute('data-ad-slot'));
+    if (explicit) return explicit;
+    if (total === 2) return i === 0 ? 'TOP' : 'BOTTOM';
+    if (total === 3) return ['TOP','MIDDLE','BOTTOM'][i] || '';
+    if (total === 4) return ['TOP','MIDDLE_TOP','MIDDLE_BOTTOM','BOTTOM'][i] || '';
+    return '';
+  }
+
+  function choose(groups, p) {
+    if (groups[p] && groups[p].length) return groups[p][0];
+    if (groups.ALL && groups.ALL.length) return groups.ALL[0];
+    if ((p === 'MIDDLE_TOP' || p === 'MIDDLE_BOTTOM') && groups.MIDDLE && groups.MIDDLE.length) return groups.MIDDLE[0];
+    return null;
+  }
+
+  function clear(slot) {
+    slot.replaceChildren();
+    slot.classList.remove('ad-loaded','ad-code','ad-image');
+    slot.removeAttribute('data-ad-error');
+    slot.removeAttribute('data-ad-loaded');
+  }
+
+  function mark(slot, title, type) {
+    slot.classList.add('ad-loaded', type === 'code' ? 'ad-code' : 'ad-image');
+    slot.dataset.adLoaded = 'yes';
+    slot.dataset.adType = type;
+    slot.setAttribute('aria-label', title || 'Advertisement');
+  }
+
+  function imageAd(slot, image, click, title) {
+    const src = url(image); if (!src) return false;
+    clear(slot);
+    const img = document.createElement('img');
+    img.src = src; img.alt = title || 'Advertisement'; img.loading = 'eager'; img.decoding = 'async';
+    const href = url(click);
+    if (href) { const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer sponsored'; a.appendChild(img); slot.appendChild(a); }
+    else slot.appendChild(img);
+    mark(slot, title, 'image');
+    return true;
+  }
+
+  function hasCreative(host) {
+    if (!host) return false;
+    const els = host.querySelectorAll('iframe,img,object,embed,video,canvas,svg,ins,[data-ad-status="filled"],[data-ad],[class*="ad"],[id*="ad"]');
+    for (const el of els) {
+      const r = el.getBoundingClientRect ? el.getBoundingClientRect() : null;
+      if (r && r.width > 2 && r.height > 2) return true;
+      if (el.tagName === 'INS' && String(el.getAttribute('data-ad-status') || '').toLowerCase() === 'filled') return true;
+    }
+    return false;
+  }
+
+  function parseCode(code) {
+    const template = document.createElement('template');
+    template.innerHTML = code;
+    return template.content;
+  }
+
+  async function runScriptsSequentially(host, scripts) {
+    for (const old of scripts) {
+      const s = document.createElement('script');
+      for (const attr of old.attributes) {
+        if (attr.name.toLowerCase() !== 'src') s.setAttribute(attr.name, attr.value);
+      }
+      const src = old.getAttribute('src');
+      if (src) {
+        s.src = src;
+        s.async = false;
+        await new Promise(resolve => {
+          let done = false;
+          const finish = () => { if (!done) { done = true; resolve(); } };
+          s.onload = finish; s.onerror = finish;
+          setTimeout(finish, 7000);
+          host.appendChild(s);
+        });
+      } else {
+        // Inline ad code runs in the page context, which lets providers see the real HTTPS site origin.
+        s.text = old.textContent || '';
+        host.appendChild(s);
+        await sleep(40);
+      }
+    }
+  }
+
+  async function executeDirect(slot, code, title) {
+    const source = String(code || '').trim();
+    if (!source) return false;
+    clear(slot);
+
+    const host = document.createElement('div');
+    host.className = 'ad-code-host';
+    host.dataset.adProvider = 'direct';
+    host.style.cssText = 'display:block;width:100%;max-width:100%;min-height:1px;text-align:center;position:relative;overflow:visible;';
+    slot.appendChild(host);
+
+    const originalWrite = document.write;
+    const originalWriteln = document.writeln;
+    let restored = false;
+    const restore = () => {
+      if (restored) return; restored = true;
+      document.write = originalWrite; document.writeln = originalWriteln;
+    };
+    const write = text => {
+      const t = String(text == null ? '' : text);
+      const temp = document.createElement('template'); temp.innerHTML = t;
+      host.appendChild(temp.content.cloneNode(true));
+    };
+
+    try {
+      const frag = parseCode(source);
+      const scripts = Array.from(frag.querySelectorAll('script'));
+      scripts.forEach(s => s.remove());
+      host.appendChild(frag);
+
+      // Some ad snippets use document.write after their external script loads.
+      document.write = write;
+      document.writeln = text => write(String(text == null ? '' : text) + '\n');
+      await runScriptsSequentially(host, scripts);
+      restore();
+
+      const checks = [100,500,1000,2000,4000,7000,9500];
+      for (const ms of checks) {
+        await sleep(ms - (checks[checks.indexOf(ms)-1] || 0));
+        if (hasCreative(host)) { mark(slot, title, 'code'); return true; }
+      }
+      // A provider may render into a wrapper without an immediately measurable creative.
+      if (host.children.length && host.getBoundingClientRect().height > 2) { mark(slot, title, 'code'); return true; }
+      clear(slot); return false;
+    } catch (e) {
+      restore();
+      console.warn('Ads direct execution failed:', e);
+      clear(slot); slot.dataset.adError = 'code-execution-failed';
+      return false;
+    } finally { restore(); }
+  }
+
+  function testFallback(slot, reason) {
+    if (!ENABLE_TEST_FALLBACK) return false;
+    clear(slot);
+    const box = document.createElement('div');
+    box.className = 'ad-test-fallback';
+    box.innerHTML = '<strong>TEST AD</strong><span>Ad slot is working</span><small>' +
+      (reason || 'Network ad did not render') + '</small>';
+    slot.appendChild(box);
+    slot.classList.add('ad-loaded','ad-test');
+    slot.dataset.adLoaded = 'test';
+    slot.dataset.adType = 'test-fallback';
+    slot.setAttribute('aria-label', 'Test advertisement fallback');
+    return true;
+  }
+
+  async function render(slot, ad) {
+    clear(slot); if (!ad) return testFallback(slot, 'No active ad found in Google Sheet');
+    if (ad.code) {
+      const ok = await executeDirect(slot, ad.code, ad.title);
+      if (ok) return true;
+    }
+    if (imageAd(slot, ad.image, ad.click, ad.title)) return true;
+    return testFallback(slot, 'Ad code/image could not render');
+  }
+
+  async function fetchSheet() {
+    let last;
+    for (let i=0; i<3; i++) {
+      try {
+        const r = await fetch(SHEET_URL + '&_=' + Date.now() + '-' + i, {cache:'no-store',credentials:'omit',redirect:'follow'});
+        if (!r.ok) throw new Error('Google Sheet HTTP ' + r.status);
+        return parseGViz(await r.text());
+      } catch (e) { last=e; if (i<2) await sleep(700*(i+1)); }
+    }
+    throw last || new Error('Google Sheet request failed');
+  }
+
+  async function loadAds() {
+    const list = slots(); if (!list.length) return;
+    // Always mark the loader version on every slot for easy browser debugging.
+    list.forEach((s,i) => { s.dataset.adsLoader = VERSION; });
+    if (location.protocol === 'file:') { console.warn('Ads: use HTTPS/GitHub Pages, not file://'); return; }
+    list.forEach((s,i) => { const p=slotPos(s,i,list.length); s.dataset.adsLoader=VERSION; s.dataset.adPosition=p.toLowerCase().replace(/_/g,'-'); });
+    try {
+      const rows = await fetchSheet();
+      const groups = {TOP:[],MIDDLE:[],MIDDLE_TOP:[],MIDDLE_BOTTOM:[],BOTTOM:[],ALL:[]};
+      rows.forEach(row => {
+        const p=pos(value(row,0)); if (!p || !Object.prototype.hasOwnProperty.call(groups,p) || !active(value(row,1))) return;
+        const ad={image:value(row,2),click:value(row,3),title:value(row,4),code:value(row,5)};
+        if (ad.code || ad.image) groups[p].push(ad);
+      });
+      for (let i=0;i<list.length;i++) { const p=slotPos(list[i],i,list.length); await render(list[i],choose(groups,p)); }
+    } catch(e) {
+      console.warn('Google Sheet Ads load failed:',e);
+      list.forEach(s => {
+        s.dataset.adError='sheet-load-failed';
+        testFallback(s, 'Google Sheet could not be loaded');
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',loadAds,{once:true}); else loadAds();
 })();

@@ -48,9 +48,9 @@
     const clean=String(text||'').trim();
     if(!clean) return {preview:'',remaining:''};
     const width=Math.max(320, document.documentElement.clientWidth||720);
-    // হোমপেজে প্রায় ৭–৮টি ভিজ্যুয়াল লাইনের পরের অংশই বিস্তারিত হিসেবে দেখানো হবে।
+    // হোমপেজে প্রায় ৩টি ভিজ্যুয়াল লাইনের পরের অংশই বিস্তারিত হিসেবে দেখানো হবে।
     const charsPerLine=Math.max(28, Math.floor(width/9));
-    const target=Math.min(clean.length, Math.max(420, Math.min(1200, charsPerLine*8)));
+    const target=Math.min(clean.length, Math.max(180, Math.min(600, charsPerLine*3)));
     if(clean.length<=target) return {preview:clean,remaining:''};
     let cut=clean.indexOf(' ',target);
     if(cut<0 || cut>target+220) cut=target;
