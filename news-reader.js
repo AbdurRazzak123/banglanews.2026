@@ -10,7 +10,7 @@
     const rows=JSON.parse(text.slice(a,b)).table.rows||[];
     return rows.map((r,i)=>{
       const c=r.c||[], v=n=>c[n]&&c[n].v!=null?String(c[n].v):'';
-      return {id:v(0)||(i+1)+'',category:v(1),title:v(2),text:v(3),image:v(4),date:v(5),image2:v(6),image3:v(7),video:v(8)};
+      return {id:v(0)||(i+1)+'',category:v(1),title:v(2),text:v(3),image:v(4),date:v(5),image2:v(6),image3:v(7),video:v(8),keywords:v(9)};
     });
   }
   function loadNews(){

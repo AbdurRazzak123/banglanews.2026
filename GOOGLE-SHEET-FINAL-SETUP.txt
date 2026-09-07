@@ -9,8 +9,9 @@ F Date
 G Image2 (Optional)
 H Image3 (Optional)
 I Video (Optional)
+J Keywords / Tags (Optional — কমা দিয়ে আলাদা করুন)
 
-Homepage/category pages (index.html ছাড়া): Details-এর প্রথম ৩টি ভিজ্যুয়াল লাইন পর্যন্ত summary দেখাবে, তারপর “আরও পড়ুন”। index.html-এর নিজস্ব নিয়ম অপরিবর্তিত। Image1, Image2, Image3 — তিনটিই ঐচ্ছিক; কোনো ছবি না দিলেও শুধু খবর প্রকাশ হবে।
+Homepage/category pages (index.html ছাড়া): Details-এর প্রথম ৩টি ভিজ্যুয়াল লাইন পর্যন্ত summary দেখাবে, তারপর “আরও পড়ুন”। index.html-এর নিজস্ব নিয়ম অপরিবর্তিত। Image1, Image2, Image3 — তিনটিই ঐচ্ছিক; J কলামে নিউজের ৫–১৫টি গুরুত্বপূর্ণ keyword/tag কমা দিয়ে লিখলে details page-এ SEO keywords ও keyword chips হিসেবে ব্যবহার হবে। কোনো ছবি না দিলেও শুধু খবর প্রকাশ হবে।
 Details page: আগের নিয়ম অনুযায়ী প্রথম ৩০টি Unicode character বাদ দিয়ে বাকি লেখা দেখাবে। Image2 প্রায় ৩০–৪০ লাইন (টার্গেট ৩৫ লাইন) পরে; Image3 ও Video শেষে/পরবর্তী অংশে।
 Category label মোবাইলে ছবির ওপর আর বসবে না; ছবির নিচে সাদা অংশে থাকবে।
 
