@@ -15,7 +15,7 @@ Details page: আগের নিয়ম অনুযায়ী প্রথম �
 Category label মোবাইলে ছবির ওপর আর বসবে না; ছবির নিচে সাদা অংশে থাকবে।
 
 
-================ AD SYSTEM (v19) ================
+================ AD SYSTEM (v21) ================
 একই Google Spreadsheet-এ Ads নামে একটি tab রাখো।
 
 Ads tab-এর ১ম সারি:
@@ -73,4 +73,4 @@ Image URL + Click URL ব্যবহার করলে image ad দেখা�
 ==========================================================
 
 
-FINAL ADS AUDIT NOTE: v19 uses direct sequential ad-code execution in the real HTTPS page context instead of about:blank iframe execution. If the provider still returns HTTP 403, the ad provider is rejecting the request/domain/token; code changes cannot override a server-side 403.
+FINAL ADS AUDIT NOTE: v21 uses direct sequential ad-code execution in the real HTTPS page context instead of about:blank iframe execution. If the provider still returns HTTP 403, the ad provider is rejecting the request/domain/token; code changes cannot override a server-side 403.
