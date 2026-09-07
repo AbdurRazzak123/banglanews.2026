@@ -1,5 +1,5 @@
 /*
- * বাংলা সংবাদ — FINAL Ads Loader v19
+ * বাংলা সংবাদ — FINAL Ads Loader v22
  * Direct execution + safe sequential rendering.
  * Google Sheet Ads columns: A Position | B Active | C Image URL | D Click URL | E Title | F Ad Code
  * Supported: TOP, MIDDLE TOP, MIDDLE BOTTOM, BOTTOM, ALL, MIDDLE
@@ -11,7 +11,7 @@
   const SHEET_NAME = 'Ads';
   const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
     '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
-  const VERSION = 'ads-v21-speed-final-test-fallback';
+  const VERSION = 'ads-v23-iframe-smart-final';
   // Built-in diagnostic fallback: this is NOT a paid/network ad. Set to false to hide it.
   const ENABLE_TEST_FALLBACK = true;
   const SHEET_TIMEOUT_MS = 5000;
@@ -68,11 +68,13 @@
     return '';
   }
 
-  function choose(groups, p) {
-    if (groups[p] && groups[p].length) return groups[p][0];
-    if (groups.ALL && groups.ALL.length) return groups.ALL[0];
-    if ((p === 'MIDDLE_TOP' || p === 'MIDDLE_BOTTOM') && groups.MIDDLE && groups.MIDDLE.length) return groups.MIDDLE[0];
-    return null;
+  function candidates(groups, p) {
+    const out = [];
+    const add = arr => { if (Array.isArray(arr)) arr.forEach(ad => { if (ad && !out.includes(ad)) out.push(ad); }); };
+    add(groups[p]);
+    add(groups.ALL);
+    if (p === 'MIDDLE_TOP' || p === 'MIDDLE_BOTTOM') add(groups.MIDDLE);
+    return out;
   }
 
   function clear(slot) {
@@ -148,54 +150,43 @@
     const source = String(code || '').trim();
     if (!source) return false;
     clear(slot);
-
-    const host = document.createElement('div');
-    host.className = 'ad-code-host';
-    host.dataset.adProvider = 'direct';
-    host.style.cssText = 'display:block;width:100%;max-width:100%;min-height:1px;text-align:center;position:relative;overflow:visible;';
-    slot.appendChild(host);
-
-    const originalWrite = document.write;
-    const originalWriteln = document.writeln;
-    let restored = false;
-    const restore = () => {
-      if (restored) return; restored = true;
-      document.write = originalWrite; document.writeln = originalWriteln;
-    };
-    const write = text => {
-      const t = String(text == null ? '' : text);
-      const temp = document.createElement('template'); temp.innerHTML = t;
-      host.appendChild(temp.content.cloneNode(true));
-    };
-
+    const iframe = document.createElement('iframe');
+    iframe.className = 'ad-code-frame';
+    iframe.title = title || 'Advertisement';
+    iframe.setAttribute('scrolling','no');
+    iframe.setAttribute('frameborder','0');
+    iframe.style.cssText = 'display:block;width:100%;min-height:250px;border:0;margin:0 auto;overflow:hidden;background:transparent;';
+    slot.appendChild(iframe);
+    const waitForLoad = new Promise(resolve => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; resolve(); } };
+      iframe.addEventListener('load', finish, {once:true});
+      iframe.addEventListener('error', finish, {once:true});
+      setTimeout(finish, 2500);
+    });
     try {
-      const frag = parseCode(source);
-      const scripts = Array.from(frag.querySelectorAll('script'));
-      scripts.forEach(s => s.remove());
-      host.appendChild(frag);
-
-      // Some ad snippets use document.write after their external script loads.
-      document.write = write;
-      document.writeln = text => write(String(text == null ? '' : text) + '\n');
-      await runScriptsSequentially(host, scripts);
-      restore();
-
+      iframe.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;padding:0;overflow:hidden;">' + source + '</body></html>';
+      await waitForLoad;
       const started = performance.now();
       const checks = [100,300,700,1200,2000,3200,4500];
       let previous = 0;
       for (const ms of checks) {
         await sleep(Math.max(0, ms - previous)); previous = ms;
-        if (hasCreative(host)) { mark(slot, title, 'code'); return true; }
+        let doc = null;
+        try { doc = iframe.contentDocument; } catch (_) {}
+        if (doc && hasCreative(doc.body || doc.documentElement)) { mark(slot, title, 'code'); return true; }
+        if (doc && doc.body && doc.body.innerHTML.trim()) {
+          const txt = (doc.body.textContent || '').trim();
+          if (doc.body.children.length > 0 || txt.length > 20) { mark(slot, title, 'code'); return true; }
+        }
         if (performance.now() - started >= CODE_TIMEOUT_MS) break;
       }
-      if (host.children.length && host.getBoundingClientRect().height > 2) { mark(slot, title, 'code'); return true; }
       clear(slot); return false;
     } catch (e) {
-      restore();
-      console.warn('Ads direct execution failed:', e);
-      clear(slot); slot.dataset.adError = 'code-execution-failed';
+      console.warn('Ads iframe execution failed:', e);
+      clear(slot); slot.dataset.adError = 'iframe-execution-failed';
       return false;
-    } finally { restore(); }
+    }
   }
 
   function testFallback(slot, reason) {
@@ -213,14 +204,19 @@
     return true;
   }
 
-  async function render(slot, ad) {
-    clear(slot); if (!ad) return testFallback(slot, 'No active ad found in Google Sheet');
-    if (ad.code) {
-      const ok = await executeDirect(slot, ad.code, ad.title);
-      if (ok) return true;
+  async function render(slot, ads) {
+    clear(slot);
+    if (!ads || !ads.length) return testFallback(slot, 'No active ad found in Google Sheet');
+    // Try every matching row, not only the first one. This prevents one bad TOP/MIDDLE row
+    // from blocking a valid ad later in the same position.
+    for (const ad of ads) {
+      if (ad.code) {
+        const ok = await executeDirect(slot, ad.code, ad.title);
+        if (ok) return true;
+      }
+      if (imageAd(slot, ad.image, ad.click, ad.title)) return true;
     }
-    if (imageAd(slot, ad.image, ad.click, ad.title)) return true;
-    return testFallback(slot, 'Ad code/image could not render');
+    return testFallback(slot, 'Matching ad rows were found, but none could render');
   }
 
   async function fetchSheet() {
@@ -252,7 +248,7 @@
         const ad={image:value(row,2),click:value(row,3),title:value(row,4),code:value(row,5)};
         if (ad.code || ad.image) groups[p].push(ad);
       });
-      await Promise.all(list.map((slot,i) => { const p=slotPos(slot,i,list.length); return render(slot,choose(groups,p)); }));
+      await Promise.all(list.map((slot,i) => { const p=slotPos(slot,i,list.length); return render(slot,candidates(groups,p)); }));
     } catch(e) {
       console.warn('Google Sheet Ads load failed:',e);
       list.forEach(s => {
